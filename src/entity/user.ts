@@ -24,7 +24,7 @@ export class User {
   username!: string;
 
   @Column()
-  @Exclude({ toPlainOnly: true })
+  // @Exclude({ toPlainOnly: true })
   password!: string;
 
   @Column()
