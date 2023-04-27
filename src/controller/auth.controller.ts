@@ -4,6 +4,9 @@ import {validate} from "class-validator";
 import {User} from "../entity/user";
 import * as HttpStatus from 'http-status';
 
+var PropertiesReader = require('properties-reader');
+var properties = PropertiesReader('config/properties');
+
 const fetch = require("node-fetch");
 
 class AuthController {
@@ -20,19 +23,20 @@ class AuthController {
       let user;
       var code = null as any;
       if (email) {
-          await fetch('http://localhost:8081/api/db/get/user/email/' + email, {
+          await fetch(properties.get("db_url") + 'get/user/email/' + email, {
             method: 'GET',
             headers: {
               'Content-type': 'application/json'
             }}).then(response => {
               code = response.status;
+              console.log(response)
               return response.json()
           }).then(data => {
               user = User.from(data);
               console.log(data)
           }).catch(error => res.status(HttpStatus.UNAUTHORIZED).send( {"status": "Email is incorrect"} ));
       } else if (username) {
-          await fetch('http://localhost:8081/api/db/get/user/username/' + username, {
+          await fetch(properties.get("db_url") + 'get/user/username/' + username, {
             method: 'GET',
             headers: {
               'Content-type': 'application/json'
@@ -67,7 +71,7 @@ class AuthController {
     //Get user from the database
     let user;
     let code;
-    await fetch('http://localhost:8081/api/db/get/user/email/' + email, {
+    await fetch(properties.get("db_url") + 'get/user/email/' + email, {
       method: 'GET',
       headers: {
         'Content-type': 'application/json'
@@ -92,7 +96,7 @@ class AuthController {
     //Hash the new password and save
     user!.hashPassword();
     
-    await fetch('http://localhost:8081/api/db/update/user', {
+    await fetch(properties.get("db_url") + 'update/user', {
         method: 'POST',
         body: JSON.stringify(user),
         headers: {
@@ -133,7 +137,7 @@ class AuthController {
       console.log(user.toJSON());
       
       let code;
-      await fetch('http://localhost:8081/api/db/create/user', {
+      await fetch(properties.get("db_url") + 'create/user', {
         method: 'POST',
         body: JSON.stringify(user),
         headers: {
