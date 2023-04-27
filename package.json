@@ -36,6 +36,7 @@
     "mysql": "^2.18.1",
     "node-fetch": "^2.6.9",
     "nodemon": "^2.0.15",
+    "properties-reader": "^2.2.0",
     "reflect-metadata": "^0.1.13",
     "socket.io": "^4.5.0",
     "ts-node": "^10.7.0",
