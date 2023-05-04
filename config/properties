@@ -1,1 +1,3 @@
 db_url=http://localhost:8081/api/db/
+user_db_url=http://localhost:8081/api/db/user/
+jwtSecret=@QEGTUI

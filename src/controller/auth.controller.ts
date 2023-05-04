@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
 import {validate} from "class-validator";
-
+import * as jwt from "jsonwebtoken";
 import {User} from "../entity/user";
 import * as HttpStatus from 'http-status';
 
@@ -23,7 +23,7 @@ class AuthController {
       let user;
       var code = null as any;
       if (email) {
-          await fetch(properties.get("db_url") + 'get/user/email/' + email, {
+          await fetch(properties.get("user_db_url") + 'get/email/' + email, {
             method: 'GET',
             headers: {
               'Content-type': 'application/json'
@@ -36,7 +36,7 @@ class AuthController {
               console.log(data)
           }).catch(error => res.status(HttpStatus.UNAUTHORIZED).send( {"status": "Email is incorrect"} ));
       } else if (username) {
-          await fetch(properties.get("db_url") + 'get/user/username/' + username, {
+          await fetch(properties.get("user_db_url") + 'get/username/' + username, {
             method: 'GET',
             headers: {
               'Content-type': 'application/json'
@@ -53,7 +53,15 @@ class AuthController {
       if (password != user!.password) {
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({status: "Password is incorrect!"});
       }
-      res.status(HttpStatus.OK).send({status: "User " + user.username + " logged in!"});
+      //Sing JWT, valid for 7 days
+      const token = jwt.sign(
+        { userId: user!.id, username: user!.username, role: user!.role },
+        properties.get("jwtSecret"),
+        { expiresIn: "7d" }
+      );
+
+      //Send the jwt in the response
+      res.send({ "token": token });
     } catch (e) {
       console.log(e);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
@@ -71,7 +79,7 @@ class AuthController {
     //Get user from the database
     let user;
     let code;
-    await fetch(properties.get("db_url") + 'get/user/email/' + email, {
+    await fetch(properties.get("user_db_url") + 'get/email/' + email, {
       method: 'GET',
       headers: {
         'Content-type': 'application/json'
@@ -96,13 +104,12 @@ class AuthController {
     //Hash the new password and save
     user!.hashPassword();
     
-    await fetch(properties.get("db_url") + 'update/user', {
+    await fetch(properties.get("user_db_url") + 'update', {
         method: 'POST',
         body: JSON.stringify(user),
         headers: {
           'Content-type': 'application/json'
         }}).then(response => {
-          console.log("test");
           code = response.status;
           return response.json()
       }).then(data => {
@@ -137,13 +144,12 @@ class AuthController {
       console.log(user.toJSON());
       
       let code;
-      await fetch(properties.get("db_url") + 'create/user', {
+      await fetch(properties.get("user_db_url") + 'create', {
         method: 'POST',
         body: JSON.stringify(user),
         headers: {
           'Content-type': 'application/json'
         }}).then(response => {
-          console.log("test");
           code = response.status;
           return response.json()
       }).then(data => {
