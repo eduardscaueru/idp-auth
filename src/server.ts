@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import 'reflect-metadata';
-import {createConnection, getRepository} from "typeorm";
 import helmet from "helmet";
 import bodyParser from "body-parser";
 import routes from "./routes";
@@ -16,9 +15,7 @@ const main = async () => {
 
   //middlewares
   app.use(helmet());
-  app.use(cors({
-    origin: ['http://localhost:4200']
-  }))
+  app.use(cors())
   app.use(bodyParser.json({ limit: '10mb' }));
   app.use(upload());
 

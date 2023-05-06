@@ -13,10 +13,13 @@ class AuthController {
 
   static login = async (req: Request, res: Response) => {
     try {
+      console.log(req.body)
       //Check if email and password are set
       let { email, password, username } = req.body;
       if (!((email || username) && password)) {
         res.status(HttpStatus.UNAUTHORIZED).send();
+
+        return;
       }
 
       //Get user from database
