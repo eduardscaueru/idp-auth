@@ -32,11 +32,9 @@ class AuthController {
               'Content-type': 'application/json'
             }}).then(response => {
               code = response.status;
-              console.log(response)
               return response.json()
           }).then(data => {
               user = User.from(data);
-              console.log(data)
           }).catch(error => res.status(HttpStatus.UNAUTHORIZED).send( {"status": "Email is incorrect"} ));
       } else if (username) {
           await fetch(properties.get("user_db_url") + 'get/username/' + username, {
@@ -64,7 +62,7 @@ class AuthController {
       );
 
       //Send the jwt in the response
-      res.send({ "token": token });
+      res.send({ "token": token, "userId": user!.id });
     } catch (e) {
       console.log(e);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
