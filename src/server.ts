@@ -15,7 +15,29 @@ const main = async () => {
 
   //middlewares
   app.use(helmet());
-  app.use(cors())
+  // app.use(cors({
+    //   origin: ['http://idp-fe:4200']
+    // }));
+    app.use(cors({
+      allowedHeaders: [
+        'X-ACCESS_TOKEN',
+        'Access-Control-Allow-Origin',
+        'Authorization',
+        'Origin',
+        'x-requested-with',
+        'Content-Type',
+        'Content-Range',
+        'Content-Disposition',
+        'Content-Description',
+      ],
+      credentials: true,
+      methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
+      origin: [
+        'http://localhost:4200',
+      ],
+      preflightContinue: false,
+        }
+    ));
   app.use(bodyParser.json({ limit: '10mb' }));
   app.use(upload());
 
